@@ -1,13 +1,13 @@
 export class UsersListComponent {
   static componentName: string = 'msUsersList';
-
+  
   static componentConfig: ng.IComponentOptions = {
     bindings: {
       users: '<',
       selected: '<',
-      selectedUser: '&onSelected'
+      selectUser: '&onSelected'
     },
     controller: UsersListComponent,
-    templateUrl: './users-list.component.html'
+    template: require('./users-list.component.html')
   };
 }

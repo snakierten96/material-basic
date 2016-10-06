@@ -2,13 +2,13 @@ import { IUser } from './users';
 
 export class UserDetailsComponent {
   static componentName: string = "msUserDetails";
-
+  
   static componentConfig: ng.IComponentOptions = {
     bindings: {
       selected: '<'
     },
     controller: UserDetailsComponent,
-    templateUrl: './user-details.component.html'
+    template: require('./user-details.component.html')
   };
 
   private selected: IUser;
@@ -29,10 +29,10 @@ export class UserDetailsComponent {
 
   share($event: MouseEvent) {
     var self = this;
-
+    
     var config: angular.material.IBottomSheetOptions = {
       parent: angular.element(document.getElementById('content')),
-      templateUrl: './user-contact-sheet.html',
+      template: require('./user-contact-sheet.html'),
       controller: UserSheetController,
       controllerAs: "$ctrl"
     };

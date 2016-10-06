@@ -1,103 +1,84 @@
-const webpack = require('webpack');
-const path = require('path');
+'use strict';
 
+const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
+const sourceMap = process.env.TEST
+  ? [new webpack.SourceMapDevToolPlugin({ filename: null, test: /\.ts$/ })]
+  : [ ];
 
-const styles = [];      // array of styles to bundle in main
-const scripts = [];
+const basePlugins = [
+  new webpack.DefinePlugin({
+    __DEV__: process.env.NODE_ENV !== 'production',
+    __PRODUCTION__: process.env.NODE_ENV === 'production',
+    __TEST__: JSON.stringify(process.env.TEST || false),
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  }),
+  new HtmlWebpackPlugin({
+    template: './src/index.html',
+    inject: 'body',
+    minify: false,
+  }),
+  new webpack.NoErrorsPlugin(),
+  new CopyWebpackPlugin([
+    { from: 'src/assets', to: 'assets' },
+  ]),
+].concat(sourceMap);
 
+const prodPlugins = [
+  //new webpack.optimize.OccurenceOrderPlugin(),
+  //new webpack.optimize.DedupePlugin(),
+  new webpack.optimize.UglifyJsPlugin({
+    mangle: true,
+    compress: {
+      warnings: false,
+    },
+  }),
+];
+
+const plugins = basePlugins
+  .concat(process.env.NODE_ENV === 'production' ? prodPlugins : []);
 
 module.exports = {
-  devtool: 'source-map',
-  entry: './src/main.ts',
+  entry: { app: './src/main.ts' },
   output: {
-    path: './dist',
-    filename: '[name].bundle.js',
-    sourceMapFilename: '[name].map',
-    chunkFilename: '[name].chunk.js'
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].[hash].js',
+    publicPath: '/',
+    sourceMapFilename: '[name].[hash].js.map',
+    chunkFilename: '[id].chunk.js'
   },
+  
+  devtool: process.env.NODE_ENV === 'production' ?
+    'source-map' :
+    'inline-source-map',
+    
+  resolve: { extensions: ['.ts', '.js'] },
+  plugins: plugins,
+  
+  devServer: {
+    historyApiFallback: { index: '/' }
+  },
+  
   module: {
-    rules: [
+    loaders: [
       {
         test: /\.ts$/,
-        loaders: [{
-          loader: 'awesome-typescript-loader',
-          query: {
-            useForkChecker: true,
-            tsconfig: path.resolve('./src/tsconfig.json')
-          }
-        }]
+        loader: 'awesome-typescript-loader',
+        query: {
+          tsconfig: path.resolve(__dirname,'src','tsconfig.json')
+        }
       },
       {
-        enforce: 'pre',
-        test: /\.js$/,
-        exclude: /node_modules/
+        test: /\.html$/,
+        loader: 'raw-loader'
       },
-      // in main, load css as raw text
       {
-        exclude: styles,
         test: /\.css$/,
-        loaders: ['raw-loader', 'postcss-loader']
-      },
-      {
-        exclude: styles,
-        test: /\.scss$|\.sass$/,
-        loaders: ['raw-loader', 'postcss-loader','sass-loader']
-      },
-
-      // outside of main, load in via style-loader
-      {
-        include: styles,
-        test: /\.css$/,
-        exclude: ['style-loader', 'css-loader', 'postcss-loader']
-      },
-      {
-        include: styles,
-        test: /\.scss$|\.sass$/,
-        loaders: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
-      },
-
-      // load global scripts using script-loader
-      { include: scripts, test: /\.js$/, loader: 'script-loader' },
-
-      { test: /\.json$/, loader: 'json-loader' },
-      { test: /\.(jpg|png|gif)$/, loader: 'url-loader?limit=10000' },
-      { test: /\.html$/, loader: 'html-loader' },
-
-      { test: /\.(otf|woff|ttf|svg)$/, loader: 'url?limit=10000' },
-      { test: /\.woff2$/, loader: 'url?limit=10000&mimetype=font/woff2' },
-      { test: /\.eot$/, loader: 'file' }
+        loaders: ['style-loader','css-loader']
+      }
     ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: path.resolve('./src/index.html'),
-      chunksSortMode: 'dependency'
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: ['styles', 'scripts', 'main'].reverse()
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
-      minChunks: Infinity,
-      name: 'inline',
-      filename: 'inline.js',
-      sourceMapFilename: 'inline.map'
-    }),
-    new CopyWebpackPlugin({
-      context: path.resolve('./src/assets'),
-      from: { glob: '**/*', dot: true },
-      ignore: ['.gitkeep'],
-      to: path.resolve('./dist/assets')
-    })
-  ],
-  node: {
-    fs: 'empty',
-    global: true,
-    crypto: 'empty',
-    module: false,
-    clearImmediate: false,
-    setImmediate: false
   }
 }

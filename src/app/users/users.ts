@@ -9,5 +9,7 @@ export interface IUser {
 export module Users {
   export var name: string = 'Users';
 
-  angular.module(Users.name, ['ngMaterial']);
+  angular
+    .module(Users.name, ['ngMaterial'])
+    .service("UsersDataService", UsersDataService);
 }

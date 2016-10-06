@@ -3,12 +3,12 @@ import { IUser, UsersDataService } from './users';
 export class AppComponent {
   // Define out AppComponent's name
   static componentName: string = 'msApp';
-
+  
   // Define our AppComponent's config
   static componentConfig: ng.IComponentOptions = {
     bindings: {},
     controller: AppComponent,
-    templateUrl: './app.component.html' 
+    template: require('./app.component.html')
   };
 
   // Define our injectables
@@ -39,6 +39,7 @@ export class AppComponent {
   }
 
   selectUser(user: number|IUser) {
+    console.log("hi");
     this.selected = angular.isNumber(user) ? this.users[<number> user] : <IUser> user;
     // If the users list/sidenav is open; we want to close it
     this.$mdSidenav('left').close();

@@ -7,6 +7,7 @@ import 'angular-sanitize';
 
 // load material basic css
 import 'angular-material/angular-material.min.css';
+import './assets/app.css';
 
 import { AppComponent } from './app/app.component';
 import { 
