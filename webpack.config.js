@@ -16,6 +16,7 @@ const basePlugins = [
     __TEST__: JSON.stringify(process.env.TEST || false),
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   }),
+  new webpack.optimize.CommonsChunkPlugin("vendor"),
   new HtmlWebpackPlugin({
     template: './src/index.html',
     inject: 'body',
@@ -28,8 +29,6 @@ const basePlugins = [
 ].concat(sourceMap);
 
 const prodPlugins = [
-  //new webpack.optimize.OccurenceOrderPlugin(),
-  //new webpack.optimize.DedupePlugin(),
   new webpack.optimize.UglifyJsPlugin({
     mangle: true,
     compress: {
@@ -42,7 +41,18 @@ const plugins = basePlugins
   .concat(process.env.NODE_ENV === 'production' ? prodPlugins : []);
 
 module.exports = {
-  entry: { app: './src/main.ts' },
+  entry: { 
+    app: './src/main.ts',
+    vendor: [
+      'angular',
+      'angular-material',
+      'angular-animate',
+      'angular-aria',
+      'angular-messages',
+      'angular-sanitize',
+      'core-js'
+    ]
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].[hash].js',
@@ -50,10 +60,13 @@ module.exports = {
     sourceMapFilename: '[name].[hash].js.map',
     chunkFilename: '[id].chunk.js'
   },
-  
+
+  /*  
   devtool: process.env.NODE_ENV === 'production' ?
     'source-map' :
     'inline-source-map',
+  */
+  devtool: 'source-map',
     
   resolve: { extensions: ['.ts', '.js'] },
   plugins: plugins,

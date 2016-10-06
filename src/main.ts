@@ -37,8 +37,8 @@ module MaterialStart {
 
       // Set theme        
       $mdThemingProvider.theme('default')
-        .primaryPalette('brown')
-        .accentPalette('red');
+        .primaryPalette('teal')
+        .accentPalette('purple');
         
     })
 
