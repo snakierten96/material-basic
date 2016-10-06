@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server -d --inline --progress --no-info --host 0.0.0.0"
+    "dev": "webpack-dev-server -d --inline --no-info --host 0.0.0.0 --post 8080"
   },
   "dependencies": {
     "angular": "^1.5.8",

@@ -39,7 +39,6 @@ export class AppComponent {
   }
 
   selectUser(user: number|IUser) {
-    console.log("hi");
     this.selected = angular.isNumber(user) ? this.users[<number> user] : <IUser> user;
     // If the users list/sidenav is open; we want to close it
     this.$mdSidenav('left').close();
