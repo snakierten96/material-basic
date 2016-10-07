@@ -25,6 +25,7 @@ const basePlugins = [
   new webpack.NoErrorsPlugin(),
   new CopyWebpackPlugin([
     { from: 'src/assets', to: 'assets' },
+    { from: 'src/favicon.ico', to: 'favicon.ico' }
   ]),
 ].concat(sourceMap);
 
